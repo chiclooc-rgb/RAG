@@ -42,6 +42,10 @@ function isDocumentFile(filename) {
 
 // Gemini API Setup with new SDK
 const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+    console.error('Error: GEMINI_API_KEY is not set in environment variables.');
+    process.exit(1);
+}
 const ai = new GoogleGenAI({ apiKey: apiKey });
 
 // File Search Store (will be created on startup)
