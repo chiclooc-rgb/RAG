@@ -1,0 +1,3 @@
+소득세, 지방소득세 계산방법
+https://incometax.calculate.co.kr/earned-income-tax-calculator
+들어가서 인건비지급내역의 지급액 셀 입력 - 100% 소득세, 지방소득세 금액 찾아서 넣기
