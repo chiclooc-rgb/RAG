@@ -123,6 +123,12 @@ async function deleteFile(fileId, fileName) {
 // File Upload Handling
 fileInput.addEventListener('change', handleFileSelect);
 
+// Also bind fileInput2 for the center area upload button
+const fileInput2 = document.getElementById('fileInput2');
+if (fileInput2) {
+    fileInput2.addEventListener('change', handleFileSelect);
+}
+
 async function handleFileSelect(e) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -443,11 +449,7 @@ async function clearChatHistory() {
     }
 }
 
-// Handle secondary file input on main area
-const fileInput2 = document.getElementById('fileInput2');
-if (fileInput2) {
-    fileInput2.addEventListener('change', handleFileSelect);
-}
+// Don't need separate handler - fileInput2 already uses handleFileSelect via HTML onclick
 
 // Load files on page load
 loadFileList();
