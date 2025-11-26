@@ -16,7 +16,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-    console.error('Error: SUPABASE_URL and SUPABASE_ANON_KEY are required in .env file');
+    console.error('Error: SUPABASE_URL and SUPABASE_ANON_KEY are required in environment variables or .env file');
     process.exit(1);
 }
 
@@ -130,26 +130,7 @@ async function initializeDatabase() {
 }
 
 // Gemini API Setup with new SDK
-// 명시적으로 .env 파일에서 키를 읽기 (환경 변수 무시)
-let apiKey = process.env.GEMINI_API_KEY;
-
-// .env 파일에서 직접 읽기 시도
-try {
-    const envPath = path.join(__dirname, '.env');
-    if (fs.existsSync(envPath)) {
-        const envContent = fs.readFileSync(envPath, 'utf-8');
-        const match = envContent.match(/GEMINI_API_KEY=(.+)/);
-        if (match && match[1]) {
-            const keyFromFile = match[1].trim();
-            if (keyFromFile && keyFromFile !== apiKey) {
-                console.log('⚠️  Using API key from .env file instead of environment variable');
-                apiKey = keyFromFile;
-            }
-        }
-    }
-} catch (error) {
-    console.error('Error reading .env file:', error.message);
-}
+const apiKey = process.env.GEMINI_API_KEY;
 
 console.log('🔑 API Key Status:');
 console.log('   - GEMINI_API_KEY loaded:', apiKey ? `Yes (${apiKey.substring(0, 20)}...)` : 'NO');
