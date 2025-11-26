@@ -391,8 +391,12 @@ async function loadChatHistory() {
         const data = await response.json();
 
         if (data.history && data.history.length > 0) {
-            // Clear initial message
+            // Clear initial message and container structure
             chatHistory.innerHTML = '';
+            // Create fresh inner container
+            const innerContainer = document.createElement('div');
+            innerContainer.className = 'w-full max-w-3xl flex flex-col';
+            chatHistory.appendChild(innerContainer);
 
             // Load each message
             data.history.forEach((msg) => {
