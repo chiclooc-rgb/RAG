@@ -1,7 +1,6 @@
 const fileInput = document.getElementById('fileInput');
 const fileStatus = document.getElementById('fileStatus');
 const fileList = document.getElementById('fileList');
-const fileCount = document.getElementById('fileCount');
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const chatHistory = document.getElementById('chatHistory');
@@ -11,9 +10,6 @@ async function loadFileList() {
     try {
         const response = await fetch('/api/files');
         const data = await response.json();
-
-        // Update file count
-        fileCount.textContent = data.count;
 
         // Clear file list
         fileList.innerHTML = '';
