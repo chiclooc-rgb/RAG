@@ -14,6 +14,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap"
         rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .material-symbols-outlined {
             font-variation-settings:
@@ -41,8 +42,271 @@
         }
 
         .overflow-y-auto::-webkit-scrollbar-thumb {
-            background-color: rgba(156, 163, 175, 0.5);
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.5));
             border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.8));
+        }
+
+        /* Smooth transitions */
+        * {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+
+        /* Button animations */
+        button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* File item hover effect */
+        .file-item {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .file-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 0.5rem;
+            pointer-events: none;
+        }
+
+        .file-item:hover::before {
+            opacity: 1;
+        }
+
+        /* Message bubble animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-bubble {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-bg-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+        }
+
+        .gradient-bg-secondary {
+            background: linear-gradient(135deg, #0B132B 0%, #1C2541 100%);
+        }
+
+        /* Loading animation */
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .pulse-dot {
+            animation: pulse-dot 1.4s ease-in-out infinite;
+        }
+
+        .pulse-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .pulse-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Markdown styling */
+        .markdown-content {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .ai-message-content .markdown-content {
+            margin: 0;
+            padding: 0;
+        }
+
+        .markdown-content h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+            color: #60a5fa;
+            border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0.875rem 0 0.4rem 0;
+            color: #93c5fd;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0.75rem 0 0.3rem 0;
+            color: #bfdbfe;
+        }
+
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0.5rem 0 0.25rem 0;
+            color: #dbeafe;
+        }
+
+        .markdown-content p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin: 0.5rem 0 0.5rem 1.5rem;
+            line-height: 1.6;
+        }
+
+        .markdown-content li {
+            margin: 0.25rem 0;
+        }
+
+        .markdown-content ul li {
+            list-style-type: disc;
+        }
+
+        .markdown-content ol li {
+            list-style-type: decimal;
+        }
+
+        .markdown-content code {
+            background-color: rgba(30, 41, 59, 0.5);
+            color: #fbbf24;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .markdown-content pre {
+            background-color: rgba(30, 41, 59, 0.7);
+            color: #e5e7eb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            line-height: 1.4;
+        }
+
+        .markdown-content pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            color: #d1d5db;
+            margin: 0.75rem 0;
+            background-color: rgba(59, 130, 246, 0.05);
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            font-style: italic;
+        }
+
+        .markdown-content strong,
+        .markdown-content b {
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .markdown-content em,
+        .markdown-content i {
+            font-style: italic;
+            color: #d1d5db;
+        }
+
+        .markdown-content a {
+            color: #60a5fa;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .markdown-content a:hover {
+            color: #93c5fd;
+        }
+
+        .markdown-content hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #4b5563, transparent);
+            margin: 1rem 0;
+        }
+
+        .markdown-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+            border: 1px solid rgba(75, 85, 99, 0.5);
+        }
+
+        .markdown-content table th {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .markdown-content table td {
+            padding: 0.75rem;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+
+        .markdown-content table tr:nth-child(even) {
+            background-color: rgba(30, 41, 59, 0.3);
         }
     </style>
     <script>
@@ -75,88 +339,88 @@
     </script>
 </head>
 
-<body class="font-display bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200">
+<body class="font-display bg-white dark:bg-slate-950 text-gray-800 dark:text-gray-200">
     <div class="flex h-screen w-full">
-        <aside class="w-64 flex-shrink-0 bg-navy-dark border-r border-navy-light/20 flex flex-col p-4">
-            <div class="flex items-center gap-2 mb-8">
-                <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg text-white shadow-lg">
-                    <span class="material-symbols-outlined text-2xl">smart_toy</span>
+        <!-- Sidebar -->
+        <aside class="w-60 flex-shrink-0 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 flex flex-col p-4 overflow-y-auto">
+            <!-- Logo -->
+            <div class="mb-8">
+                <div class="flex items-center gap-2 cursor-pointer group">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl">smart_toy</span>
+                    </div>
+                    <h1 class="text-lg font-bold text-gray-900 dark:text-white">AI Manual</h1>
                 </div>
-                <h1 class="text-xl font-bold text-white">AI Manual</h1>
             </div>
-            <nav class="flex-1 flex flex-col gap-4">
-                <a class="flex items-center gap-3 p-2 rounded-lg bg-blue-500/20 text-blue-300 font-semibold" href="#">
-                    <span class="material-symbols-outlined fill">chat</span>
-                    <span>Manual Search</span>
-                </a>
-                <!-- File Upload Trigger -->
+
+            <!-- Quick Actions -->
+            <div class="space-y-2 mb-6">
+                <!-- Upload Button -->
                 <div class="relative">
-                    <input type="file" id="fileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept=".pdf,.txt,.md,.csv" multiple>
-                    <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-navy-light/20 text-gray-400 cursor-pointer"
-                        id="uploadBtn">
-                        <span class="material-symbols-outlined">folder</span>
-                        <span>문서 업로드</span>
-                    </a>
-                </div>
-                <div id="fileStatus" class="text-xs text-gray-400 px-2"></div>
-
-                <!-- File List -->
-                <div class="mt-4">
-                    <p class="text-xs text-gray-500 px-2 mb-2">업로드된 문서 (<span id="fileCount">0</span>)</p>
-                    <div id="fileList" class="space-y-1 max-h-64 overflow-y-auto"></div>
-                </div>
-            </nav>
-            <div class="mt-auto">
-                <div class="border-t border-navy-light/20 my-4"></div>
-                <div class="flex items-center gap-3 p-2">
-                    <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white">
-                        <span class="material-symbols-outlined">person</span>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-white">사용자</p>
-                        <p class="text-sm text-gray-400">user@example.com</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        <main class="flex-1 flex flex-col bg-gray-50 dark:bg-navy">
-            <header
-                class="flex items-center justify-between p-4 border-b border-navy-light/20 bg-navy-dark backdrop-blur-sm">
-                <div>
-                    <h2 class="text-lg font-bold text-white">AI Powered</h2>
-                    <p class="text-sm text-gray-400">업무 매뉴얼에 대해 무엇이든 물어보세요.</p>
-                </div>
-                <button class="p-2 rounded-full hover:bg-navy-light/20 text-gray-400">
-                    <span class="material-symbols-outlined">settings</span>
-                </button>
-            </header>
-
-            <!-- Chat History Area -->
-            <div class="flex-1 overflow-y-auto p-6 space-y-6" id="chatHistory">
-                <div class="flex justify-start">
-                    <div class="bg-white dark:bg-navy-light/50 rounded-lg p-4 max-w-2xl shadow-sm">
-                        <p>안녕하세요! 검색할 매뉴얼 파일을 왼쪽 메뉴의 '문서 업로드'를 눌러 업로드해주세요.</p>
-                    </div>
-                </div>
-            </div>
-
-            <footer
-                class="p-4 bg-white dark:bg-navy-dark/50 border-t border-gray-200 dark:border-navy-light/20 backdrop-blur-sm">
-                <div class="relative">
-                    <input id="messageInput"
-                        class="w-full pl-12 pr-12 py-3 rounded-lg bg-gray-100 dark:bg-navy-light/30 border-transparent focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-gray-200"
-                        placeholder="질문을 입력하세요..." type="text" disabled />
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        <span class="material-symbols-outlined">add_circle</span>
-                    </div>
-                    <button id="sendBtn"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full text-white hover:opacity-90 transition-opacity shadow-lg"
-                        disabled>
-                        <span class="material-symbols-outlined">send</span>
+                    <input type="file" id="fileInput" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.txt,.md,.csv" multiple>
+                    <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors" id="uploadBtn">
+                        <span class="material-symbols-outlined">add</span>
+                        <span>새 문서</span>
                     </button>
                 </div>
-            </footer>
+                <!-- Status Message -->
+                <div id="fileStatus" class="text-xs text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg bg-gray-100 dark:bg-slate-800"></div>
+            </div>
+
+            <!-- Documents Section -->
+            <nav class="flex-1 flex flex-col">
+                <div class="mb-3">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-3">문서</p>
+                </div>
+                <div id="fileList" class="space-y-1 overflow-y-auto"></div>
+            </nav>
+
+            <!-- Footer Actions -->
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-slate-700 space-y-2">
+                <button id="clearHistoryBtn" onclick="clearChatHistory()"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium transition-colors group">
+                    <span class="material-symbols-outlined text-base">delete_sweep</span>
+                    <span>초기화</span>
+                </button>
+            </div>
+        </aside>
+        <main class="flex-1 flex flex-col bg-gray-50 dark:bg-slate-950">
+            <!-- Chat Area - Center Aligned Container -->
+            <div class="flex-1 overflow-y-auto flex flex-col items-center px-4" id="chatHistory">
+                <div class="w-full max-w-3xl flex flex-col">
+                    <div class="flex-1 flex items-center justify-center py-6">
+                        <div class="text-center">
+                            <div class="mb-4 inline-block p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-5xl">smart_toy</span>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI Manual Search</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-6">문서를 업로드하고 AI와 대화하세요. 왼쪽 사이드바에서 문서를 추가할 수 있습니다.</p>
+                            <div class="relative">
+                                <input type="file" id="fileInput2" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".pdf,.txt,.md,.csv" multiple>
+                                <button class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors inline-block">
+                                    문서 업로드
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area - Center Aligned -->
+            <div class="border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex justify-center">
+                <div class="w-full max-w-3xl px-4">
+                    <div class="flex gap-3">
+                        <input id="messageInput"
+                            class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            placeholder="질문을 입력하세요..." type="text" disabled />
+                        <button id="sendBtn"
+                            class="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            disabled>
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     <script src="app.js"></script>
