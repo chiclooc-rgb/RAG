@@ -346,10 +346,10 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
                 .from('files')
                 .insert({
                     id: fileId,
-                    fileName: displayName,
-                    fileSize: fileSize,
-                    geminiFileName: uploadedFile.name,
-                    mimeType: mimeType
+                    filename: displayName,
+                    filesize: fileSize,
+                    geminifilename: uploadedFile.name,
+                    mimetype: mimeType
                 });
 
             if (insertError) {
@@ -558,22 +558,29 @@ app.get('/api/files', async (req, res) => {
     try {
         const { data: files, error } = await supabase
             .from('files')
-            .select('id, fileName, fileSize, uploadedAt')
-            .order('uploadedAt', { ascending: false });
+            .select('id, filename, filesize, uploadedat')
+            .order('uploadedat', { ascending: false });
 
         if (error) {
             console.error('Error fetching files:', error);
-            return res.status(500).json({ error: '파일 목록을 불러올 수 없습니다.' });
+            return res.status(500).json({ error: '파일 목록을 불러올 수 없습니다.', details: error });
         }
 
+        const mappedFiles = files ? files.map(f => ({
+            id: f.id,
+            fileName: f.filename,
+            fileSize: f.filesize,
+            uploadedAt: f.uploadedat
+        })) : [];
+
         res.json({
-            count: files ? files.length : 0,
-            files: files || [],
+            count: mappedFiles.length,
+            files: mappedFiles,
             storeName: fileSearchStore ? fileSearchStore.name : null
         });
     } catch (error) {
         console.error('Error in /api/files:', error);
-        res.status(500).json({ error: '파일 목록을 불러올 수 없습니다.' });
+        res.status(500).json({ error: '파일 목록을 불러올 수 없습니다.', details: error.message });
     }
 });
 
@@ -722,12 +729,12 @@ app.delete('/api/files/:fileId', async (req, res) => {
 
         try {
             // Delete from File Search Store
-            if (fileSearchStore && file.geminiFileName) {
+            if (fileSearchStore && file.geminifilename) {
                 const deleteResponse = await ai.fileSearchStores.removeFile({
                     fileSearchStoreName: fileSearchStore.name,
-                    fileName: file.geminiFileName
+                    fileName: file.geminifilename
                 });
-                console.log(`✓ File removed from store: ${file.geminiFileName}`);
+                console.log(`✓ File removed from store: ${file.geminifilename}`);
             }
 
             // Delete from Supabase
@@ -742,11 +749,11 @@ app.delete('/api/files/:fileId', async (req, res) => {
             }
 
             uploadedFileCount--;
-            console.log(`✓ File deleted: ${file.fileName}`);
+            console.log(`✓ File deleted: ${file.filename}`);
             res.json({
                 success: true,
                 message: '파일이 삭제되었습니다.',
-                fileName: file.fileName,
+                fileName: file.filename,
                 totalFiles: uploadedFileCount
             });
         } catch (error) {

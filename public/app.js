@@ -12,10 +12,26 @@ const newConversationBtn = document.getElementById('newConversationBtn');
 let currentConversationId = null;
 let conversations = [];
 
+// Base API endpoint helper (supports file:// or other dev hosts)
+const apiBase = (() => {
+    const origin = window.location.origin;
+    // If running on localhost but not port 3000 (e.g. Live Server on 5500), point to backend on 3000
+    if (origin.includes('localhost') && !origin.includes(':3000')) {
+        return 'http://localhost:3000';
+    }
+    // Otherwise use current origin (production or localhost:3000)
+    if (origin && origin !== 'file://') return origin;
+    return 'http://localhost:3000';
+})();
+
+function apiFetch(path, options) {
+    return fetch(`${apiBase}${path}`, options);
+}
+
 // Load conversations on page load
 async function loadConversations() {
     try {
-        const response = await fetch('/api/conversations');
+        const response = await apiFetch('/api/conversations');
         const data = await response.json();
         conversations = data.conversations || [];
         renderConversationList();
@@ -38,11 +54,10 @@ function renderConversationList() {
 
     conversations.forEach((conv) => {
         const convItem = document.createElement('div');
-        convItem.className = `conversation-item px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-colors ${
-            currentConversationId === conv.id
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-medium'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
-        }`;
+        convItem.className = `conversation-item px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-colors ${currentConversationId === conv.id
+            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-medium'
+            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+            }`;
 
         const titleEl = document.createElement('div');
         titleEl.className = 'truncate font-medium mb-1';
@@ -79,7 +94,7 @@ async function startNewConversation() {
 // Load specific conversation
 async function loadConversation(conversationId) {
     try {
-        const response = await fetch(`/api/conversations/${conversationId}`);
+        const response = await apiFetch(`/api/conversations/${conversationId}`);
         const data = await response.json();
 
         currentConversationId = conversationId;
@@ -124,7 +139,7 @@ function showLandingPage() {
 // File Management Functions
 async function loadFileList() {
     try {
-        const response = await fetch('/api/files');
+        const response = await apiFetch('/api/files');
         const data = await response.json();
 
         fileList.innerHTML = '';
@@ -188,7 +203,7 @@ async function deleteFile(fileId, fileName) {
     }
 
     try {
-        const response = await fetch(`/api/files/${fileId}`, {
+        const response = await apiFetch(`/api/files/${fileId}`, {
             method: 'DELETE'
         });
 
@@ -228,7 +243,7 @@ async function handleFileSelect(e) {
         formData.append('file', file);
 
         try {
-            const response = await fetch('/api/upload', {
+            const response = await apiFetch('/api/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -284,7 +299,7 @@ async function sendMessage() {
     // If no conversation exists, create one
     if (!currentConversationId) {
         try {
-            const createResponse = await fetch('/api/conversations', {
+            const createResponse = await apiFetch('/api/conversations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -300,6 +315,7 @@ async function sendMessage() {
                 await loadConversations();
             } else {
                 console.error('Failed to create conversation');
+                alert('대화를 시작할 수 없습니다. 서버 상태를 확인해주세요.');
                 return;
             }
         } catch (error) {
@@ -323,7 +339,7 @@ async function sendMessage() {
     const aiMessageId = addMessage('', 'ai', true);
 
     try {
-        const response = await fetch('/api/chat', {
+        const response = await apiFetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -459,7 +475,7 @@ async function clearAllConversations() {
     }
 
     try {
-        const response = await fetch('/api/conversations', {
+        const response = await apiFetch('/api/conversations', {
             method: 'DELETE'
         });
 
@@ -483,6 +499,8 @@ async function clearAllConversations() {
 }
 
 // Initialize on page load
+messageInput.disabled = false;
+sendBtn.disabled = false;
 loadFileList();
 loadConversations();
 showLandingPage();
